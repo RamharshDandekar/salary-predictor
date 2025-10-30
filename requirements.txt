@@ -7,4 +7,5 @@ xgboost
 lightgbm
 matplotlib
 seaborn
+gunicorn
 nltk
