@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salary Predictor Pro</title>
+    <!-- Bootswatch Darkly Theme -->
+    <link rel="stylesheet" href="https://bootswatch.com/5/darkly/bootstrap.min.css">
+    <!-- Animate.css CDN for animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">Salary Predictor Pro</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-5 mb-5">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <!-- ADDED ANIMATION: The form card will fade in and slide up -->
+                <div class="card border-primary animate__animated animate__fadeInUp">
+                    <div class="card-header text-center">
+                        <h3>Predict Job Salary in India</h3>
+                        <p class="text-muted">Enter the job details below to get an estimated salary midpoint.</p>
+                    </div>
+                    <div class="card-body">
+                        <form id="prediction-form" action="/" method="post">
+                            <div class="row">
+                                <!-- Left Column -->
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="min_experience" class="form-label">Minimum Experience (Years)</label>
+                                        <input type="number" class="form-control" id="min_experience" name="min_experience" step="0.5" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="max_experience" class="form-label">Maximum Experience (Years)</label>
+                                        <input type="number" class="form-control" id="max_experience" name="max_experience" step="0.5" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="company_size" class="form-label">Company Size (Employees)</label>
+                                        <input type="number" class="form-control" id="company_size" name="company_size" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="qualification" class="form-label">Highest Qualification</label>
+                                        <select class="form-select" id="qualification" name="qualification" required>
+                                            {% for qual in qualifications %}
+                                            <option value="{{ qual }}">{{ qual }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="location" class="form-label">Location</label>
+                                        <select class="form-select" id="location" name="location" required>
+                                            {% for loc in locations %}
+                                            <option value="{{ loc }}">{{ loc }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <!-- Right Column -->
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="work_type" class="form-label">Work Type</label>
+                                        <select class="form-select" id="work_type" name="work_type" required>
+                                            {% for wt in work_types %}
+                                            <option value="{{ wt }}">{{ wt }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="job_title" class="form-label">Job Title</label>
+                                        <select class="form-select" id="job_title" name="job_title" required>
+                                            {% for title in job_titles %}
+                                            <option value="{{ title }}">{{ title }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                     <div class="mb-3">
+                                        <label for="sector" class="form-label">Company Sector</label>
+                                        <select class="form-select" id="sector" name="sector" required>
+                                            {% for s in sectors %}
+                                            <option value="{{ s }}">{{ s }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="industry" class="form-label">Company Industry</label>
+                                        <select class="form-select" id="industry" name="industry" required>
+                                            {% for ind in industries %}
+                                            <option value="{{ ind }}">{{ ind }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                     <div class="mb-3">
+                                        <label for="skills" class="form-label">Key Skills</label>
+                                        <textarea class="form-control" id="skills" name="skills" rows="1" placeholder="e.g., Python, SQL, Machine Learning" required></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- ADDED: Loading Spinner (initially hidden) -->
+                            <div id="loading-spinner" style="display: none;" class="text-center my-3">
+                                <div class="spinner-border text-primary" role="status">
+                                  <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2">Calculating Salary...</p>
+                            </div>
+                            <div class="d-grid gap-2 mt-3">
+                                <button type="submit" class="btn btn-primary btn-lg">Predict Salary</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Prediction Result Display -->
+                {% if prediction_text %}
+                <!-- ADDED ANIMATION: The result will bounce in -->
+                <div class="card border-success mt-4 animate__animated animate__bounceIn">
+                    <div class="card-body text-center">
+                        <h2 class="card-title">Predicted Average Salary</h2>
+                        <h1 class="display-4 text-success">{{ prediction_text }}</h1>
+                        <p class="text-muted">(Based on the provided job details)</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer mt-auto py-3 bg-dark">
+        <div class="container text-center">
+            <span class="text-muted">Developed for the Salary Prediction Project.</span>
+        </div>
+    </footer>
+
+    <!-- ADDED: JavaScript to show spinner on form submission -->
+    <script>
+        document.getElementById('prediction-form').addEventListener('submit', function() {
+            // Hide previous result if it exists
+            const existingResult = document.querySelector('.card.border-success');
+            if (existingResult) {
+                existingResult.style.display = 'none';
+            }
+            // Show the spinner
+            document.getElementById('loading-spinner').style.display = 'block';
+        });
+    </script>
+
+</body>
+</html>
